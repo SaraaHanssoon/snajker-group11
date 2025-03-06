@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import { Box, Grid, Typography } from "@mui/material";
 import productService from "../services/ProductService"; // Importera rätt
 
-import ProductItemSmall from "./ProductItemSmall";
+import ProductItemSmall from './ProductItemSmall'; 
+
 
 function ProductList({ pathname }) {
   const [products, setProducts] = useState([]);

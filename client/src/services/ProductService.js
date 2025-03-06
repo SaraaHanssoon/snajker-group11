@@ -1,6 +1,6 @@
 import axios from "axios"; // Använd ES-moduler istället för require
 
-const API_URL = "http://localhost:5000/api/products"; // Se till att API-url matchar servern
+const API_URL = "http://localhost:3000/api/products"; // Se till att API-url matchar servern
 
 const productService = {
   getAll: async () => {

@@ -9,6 +9,9 @@ import {
 } from "@mui/material";
 
 function ProductItemSmall({ product }) {
+  // Skriv ut hela product-objektet för att kontrollera
+  console.log('Product:', product);
+
   return (
     <Card variant='outlined' sx={{
       height: "450px",
@@ -18,16 +21,19 @@ function ProductItemSmall({ product }) {
       <CardHeader
         title={
           <Typography variant='h5' component='div'>
-            <Link to={`/products/${product.id}`} style={{ textDecoration: 'none', color: '#795548' }}> {product.title} </Link>
+            <Link to={`/products/${product.id}`} style={{ textDecoration: 'none', color: '#795548' }}>
+              {product.title}
+            </Link>
           </Typography>
         }
         sx={{ paddingBottom: 0 }}
       />
       <CardContent sx={{ paddingTop: '8px' }}>
-        <CardMedia 
+        {/* Bildvägen skrivs ut här */}
+        <CardMedia
           height="200"
-          component='img'
-          image={product.imageUrl}
+          component="img"
+          image={`/images/${product.imageUrl}`} // Här använder vi en relativ sökväg
           alt={`Image of ${product.title}`}
           sx={{ borderRadius: 2, objectFit: 'cover' }}
         />

@@ -1,21 +1,25 @@
-const express = require("express");
-const app = express();
+var express = require('express');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
 
-app.use(express.json()); // Middleware för att tolka JSON
+var app = express();
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, PUT, PATCH, POST, DELETE');
+  next();
+});
 
-const cartItemRoutes = require("./routes/cartItemRoutes");
-const cartRoutes = require("./routes/cartRoutes");
-const dealRoutes = require("./routes/dealRoutes");
-const productRoutes = require("./routes/productRoutes");
-const userRoutes = require("./routes/userRoutes");
-const categoryRoutes = require("./routes/categoryRoutes");
 
-// API-rutter
-app.use("/api/cartitems", cartItemRoutes);
-app.use("/api/carts", cartRoutes);
-app.use("/api/deals", dealRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/categories", categoryRoutes);
+app.use("/carts", require("./routes/cartRoutes"));
+app.use("/products", require("./routes/productRoutes"));
+app.use("/users", require("./routes/userRoutes"));
+app.use("/categories", require("./routes/categoryRoutes"));
 
-module.exports = app; // Exportera appen
+
+
+module.exports = app;
