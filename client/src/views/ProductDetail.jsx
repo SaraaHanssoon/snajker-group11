@@ -16,15 +16,20 @@ function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
 
+  // Hämta produktdata
   useEffect(() => {
-    getOne(id).then((product) => setProduct(product));
+    // Hämta produktdata från API eller annan källa
+    getOne(id).then((product) => {
+      setProduct(product);
+    });
   }, [id]);
 
   const navigate = useNavigate();
 
+  // Funktion för att lägga till recension
   function onReviewAdd(review) {
-    addReview(product.id, review)
-      .then(() => getOne(id))
+    addReview(product.product_id, review)  // Se till att använda rätt id (product_id)
+      .then(() => getOne(id))  // Hämta produkt efter att en recension har lagts till
       .then((updatedProduct) => setProduct(updatedProduct));
   }
 
@@ -32,6 +37,7 @@ function ProductDetail() {
   const message = location.state?.message;
   const [open, setOpen] = useState(true);
 
+  // Rensa meddelande
   function clearMessage() {
     window.history.replaceState({}, "");
   }
@@ -61,7 +67,7 @@ function ProductDetail() {
           mt={2}
         >
           <Paper elevation={3} sx={{ p: 3, width: '100%', flex: 1, bgcolor: '#fff8e1' }}>
-            <ProductItemLarge product={product} />
+            <ProductItemLarge product={product} /> 
             <Box mt={2}>
               <Tooltip
                 title='Only admins can edit this product'
@@ -72,22 +78,24 @@ function ProductDetail() {
                 <Button
                   startIcon={<EditIcon />}
                   variant='contained'
-                  onClick={() => navigate(`/product/${product.id}/edit`)}
+                  onClick={() => navigate(`/product/${product.product_id}/edit`)} // Uppdatera id till product_id
                 >
                   Edit Product
                 </Button>
               </Tooltip>
             </Box>
           </Paper>
+
+          {/* Recensioner och formulär */}
           <Paper elevation={3} sx={{ p: 3, width: '100%', flex: 1, bgcolor: '#fff8e1', mt: { xs: 5, md: 0 } }}>
             <Typography variant="h5" gutterBottom>Review</Typography>
-            <ReviewForm onSave={onReviewAdd} />
+            <ReviewForm onSave={onReviewAdd} /> {/* Formulär för att lägga till recension */}
             <Typography variant="h5" sx={{ mt: 6 }}>Customer Reviews</Typography>
             <Box sx={{ mt: 2 }}>
               {product.reviews && (
                 <List sx={{ width: '100%' }}>
                   {product.reviews.map((review, i) => (
-                    <Review key={`review_${i}`} review={review} />
+                    <Review key={`review_${i}`} review={review} /> 
                   ))}
                 </List>
               )}
