@@ -1,6 +1,7 @@
 var express = require('express');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var path = require('path');
 
 var app = express();
 app.use(logger('dev'));
@@ -13,6 +14,9 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET, PUT, PATCH, POST, DELETE');
   next();
 });
+
+// Lägg till denna rad innan dina routes:
+app.use('/images', express.static(path.join(__dirname, '../client/public/images')));
 
 
 app.use("/carts", require("./routes/cartRoutes"));

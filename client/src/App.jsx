@@ -10,6 +10,8 @@ import {
   ThemeProvider,
 } from "@mui/material";
 
+
+
 const theme = createTheme({
   palette: {
     background: {
@@ -54,8 +56,8 @@ function App() {
       <Box sx={{ flexGrow: 1, bgcolor: "background.default" }}>
         <AppBar position="static" sx={{ boxShadow: "none" }}>
           <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-            {/* Bara logotypen */}
-            <img src="/images/logo.png" alt="Logo" style={{ width: "150px" }} /> {/* Justera storleken på logotypen här */}
+           
+            <img src="/images/logo.png" alt="Logo" style={{ width: "150px" }} /> 
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Tooltip
                 title="Endast admin kan skapa ny vara"

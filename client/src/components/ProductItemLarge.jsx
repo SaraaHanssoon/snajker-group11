@@ -7,7 +7,6 @@ import {
   Button,
   TextField,
   Box,
-  CardMedia,
   Paper,
   Typography,
   Rating,
@@ -17,15 +16,14 @@ function ProductItemLarge({ product }) {
   const [amount, setAmount] = useState(1);
   const navigate = useNavigate();
 
-  const handleAddToCart = () => {
-    alert("Product added to cart");
+  // ✅ Rättar bildsökväg
+  const getImageUrl = (imageUrl) => {
+    return `http://localhost:3000/${imageUrl}`;
   };
 
-  // Felsökning: Logga produktdata för att säkerställa att vi får den korrekta informationen
   useEffect(() => {
-    console.log('Product:', product);  // Kontrollera att produktobjektet skickas korrekt
-    console.log('Image URL:', product.imageUrl); // Kontrollera bildvägen
-    console.log('Price:', product.price);  // Kontrollera priset
+    console.log('🔍 Product:', product);
+    console.log('🖼️ Image Path:', getImageUrl(product.imageUrl));
   }, [product]);
 
   return (
@@ -35,25 +33,21 @@ function ProductItemLarge({ product }) {
         <Rating name='read-only' value={product.rating} readOnly />
       </Box>
 
-      {/* Kontrollera om imageUrl finns och visa den */}
-      {product.imageUrl ? (
-        <CardMedia
-          sx={{ borderRadius: 2, maxHeight: '300px', objectFit: 'cover' }}
-          component='img'
-          image={`${process.env.PUBLIC_URL}/images/${product.imageUrl}`}  // Bildvägen
-          alt={`Image of ${product.name}`} 
-        />
-      ) : (
-        <Typography variant='h6' color="error">Image not available</Typography>  // Om ingen bild finns
-      )}
+      {/* ✅ Använder endast produktens faktiska bildväg */}
+      <img
+        src={getImageUrl(product.imageUrl)}
+        alt={`Image of ${product.name}`}
+        style={{ width: "100%", height: "300px", objectFit: "cover", borderRadius: "10px" }}
+      />
 
       <Typography variant='body1' sx={{ mt: 4, color: '#3e2723' }}> {product.description} </Typography>
 
-      {/* Kontrollera om price finns och visa det */}
-      {product.price ? (
-        <Typography variant='h6' gutterBottom sx={{ color: '#1b5e20' }}> {product.price} kr </Typography>
+      {typeof product.price !== "undefined" && product.price !== null ? (
+        <Typography variant='h6' gutterBottom sx={{ color: '#1b5e20' }}>
+          {product.price} kr
+        </Typography>
       ) : (
-        <Typography variant='body1' color="error">Price not available</Typography>  // Om priset inte finns
+        <Typography variant='body1' color="error">Price not available</Typography>
       )}
 
       <Box sx={{ mt: 4 }}>
@@ -69,7 +63,7 @@ function ProductItemLarge({ product }) {
         />
         <Button
           sx={{ ml: 1.5 }}
-          onClick={handleAddToCart}
+          onClick={() => alert("Product added to cart")}
           startIcon={<AddShoppingCartIcon />}
           variant="contained"
           color='primary'
@@ -85,12 +79,7 @@ function ProductItemLarge({ product }) {
         sx={{
           mt: 2,
           backgroundColor: '#795548', 
-          '&:hover': {
-            backgroundColor: '#5d4037' 
-          },
-          position: 'absolute', 
-          top: 95, 
-          left: 70,
+          '&:hover': { backgroundColor: '#5d4037' },
         }}
         onClick={() => navigate(-1)}
       >
@@ -102,12 +91,12 @@ function ProductItemLarge({ product }) {
 
 ProductItemLarge.propTypes = {
   product: PropTypes.shape({
-    rating: PropTypes.number.isRequired,
-    product_id: PropTypes.number.isRequired,
+    rating: PropTypes.number,
+    product_id: PropTypes.number,
     name: PropTypes.string.isRequired,
     imageUrl: PropTypes.string,
     description: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
+    price: PropTypes.number,
   }).isRequired
 };
 

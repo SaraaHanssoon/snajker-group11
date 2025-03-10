@@ -3,6 +3,12 @@ import { Link } from 'react-router-dom';
 import { Card, CardMedia, CardHeader, CardContent, Typography } from "@mui/material";
 
 function ProductItemSmall({ product }) {
+  const getImageUrl = (imageUrl) => {
+    const url = `http://localhost:3000/${imageUrl}`;
+    console.log(`🔍 Försöker ladda bild: ${url}`);  // Logga bildvägen
+    return url;
+  };
+
   return (
     <Card variant='outlined' sx={{
       height: "450px",
@@ -21,11 +27,10 @@ function ProductItemSmall({ product }) {
       />
       <CardContent sx={{ paddingTop: '8px' }}>
         <CardMedia
-          height="200"
           component="img"
-          image={`/images/${product.imageUrl}`}  // Kontrollera att bildvägen är korrekt
-          alt={`Image of ${product.name}`}  // Bilden använder produktens namn för alt-texten
-          sx={{ borderRadius: 2, objectFit: 'cover' }}
+          image={getImageUrl(product.imageUrl)}
+          alt={`Image of ${product.name}`}
+          sx={{ borderRadius: 2, objectFit: 'cover', width: "100%", height: "200px" }}
         />
         <Typography variant='body1' sx={{ mt: 2, color: '#4e342e' }}>
           {product.description}

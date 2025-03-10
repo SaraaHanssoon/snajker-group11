@@ -7,7 +7,12 @@ import {
   Container, 
   CircularProgress, 
   Card, 
-  CardContent 
+  CardMedia, 
+  CardContent, 
+  FormControl, 
+  InputLabel, 
+  Select, 
+  MenuItem 
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
@@ -18,24 +23,50 @@ function Home() {
   const [open, setOpen] = useState(true);
   const [products, setProducts] = useState([]); 
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [category, setCategory] = useState("");
+  const [inStock, setInStock] = useState("");
 
   function clearMessage() {
     window.history.replaceState({}, "");
   }
 
-  useEffect(() => {
-    fetch("http://localhost:3000/products")
-      .then((response) => response.json())
+  const fetchProducts = () => {
+    setLoading(true);
+    setError(null);
+
+    let url = "http://localhost:3000/products"; // Grund-URL
+    let params = [];
+
+    if (category) params.push(`category=${category}`);
+    if (inStock) params.push(`stock=${inStock}`);
+
+    if (params.length) url = `http://localhost:3000/products/filter?${params.join("&")}`;
+
+    console.log("📡 Fetching:", url);
+
+    fetch(url)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) => {
-        console.log("Fetched products:", data); // Kontrollera att ID finns
+        console.log("✅ Filtered products:", data);
         setProducts(data);
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching products:", error);
+        console.error("❌ Error fetching products:", error);
+        setError(error.message);
         setLoading(false);
       });
-  }, []);
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, [category, inStock]);
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
@@ -69,39 +100,63 @@ function Home() {
           Snajker - Sneakers for Every Style 👟
         </Typography>
 
+        {/* Filter Dropdowns */}
+        <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+          <FormControl sx={{ minWidth: 150 }}>
+            <InputLabel>Category</InputLabel>
+            <Select value={category} onChange={(e) => setCategory(e.target.value)}>
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="1">Adidas</MenuItem>
+              <MenuItem value="2">Nike</MenuItem>
+              <MenuItem value="3">Puma</MenuItem>
+              <MenuItem value="4">Converse</MenuItem>
+              <MenuItem value="5">Vans</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl sx={{ minWidth: 150 }}>
+            <InputLabel>Stock</InputLabel>
+            <Select value={inStock} onChange={(e) => setInStock(e.target.value)}>
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="true">In Stock</MenuItem>
+              <MenuItem value="false">Out of Stock</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
             <CircularProgress color="secondary" />
           </Box>
+        ) : error ? (
+          <Typography variant="h6" sx={{ color: "red", textAlign: "center" }}>
+            Error loading products: {error}
+          </Typography>
         ) : (
           <Grid container spacing={3}>
             {products.length > 0 ? (
-              products.map((item, index) => (
-                <Grid item xs={12} sm={6} md={4} key={item.id || `product-${index}`}>
-                  <Card
-                    sx={{
-                      backgroundColor: "#FFDEE9",
-                      backgroundImage: "linear-gradient(0deg, #FFDEE9 0%, #B5FFFC 100%)",
-                      borderRadius: 3,
-                      transition: "transform 0.2s",
-                      "&:hover": { transform: "scale(1.05)" },
-                    }}
-                  >
+              products.map((item) => (
+                <Grid item xs={12} sm={6} md={4} key={item.product_id}>
+                  <Card sx={{ borderRadius: 3, backgroundColor: "#FFDEE9" }}>
+                    <CardMedia
+                      component="img"
+                      height="200"
+                      image={`http://localhost:3000/${item.imageUrl}`}
+                      alt={item.name}
+                      sx={{ objectFit: "cover" }}
+                    />
                     <CardContent>
-                      <Typography variant="h6" sx={{ fontWeight: "bold", color: "#333" }}>
-                        {item.name}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {item.description}
+                      <Typography variant="h6">{item.name}</Typography>
+                      <Typography variant="body2">{item.description}</Typography>
+                      <Typography variant="h6" sx={{ color: "#1b5e20" }}>
+                        {item.price} kr
                       </Typography>
                     </CardContent>
                   </Card>
                 </Grid>
               ))
             ) : (
-              <Typography variant="h6" sx={{ textAlign: "center", width: "100%", mt: 2 }}>
-                No products available
-              </Typography>
+              <Typography>No products found.</Typography>
             )}
           </Grid>
         )}
